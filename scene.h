@@ -5,5 +5,5 @@ class Scene
 {
     public:
         virtual ~Scene() {};
-        virtual sf::Image Update() = 0;
+        virtual bool Update(sf::Texture& texture) = 0;
 };

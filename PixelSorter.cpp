@@ -4,27 +4,26 @@
 #include "utility.h"
 #include <iostream>
 
-PixelSorter::PixelSorter(sf::Image& img, int sampleSize, unsigned int /*seed*/) : img(img)
+PixelSorter::PixelSorter(const std::string& path, int sampleSize, unsigned int /*seed*/)
 {
 	std::random_device rd;  // for seed for the random number engine
     this->sampleSize = sampleSize;
     this->randEng = std::mt19937(rd());
     index = 0;
+    img.loadFromFile(path); 
 }
 
-sf::Image PixelSorter::Update()
+bool PixelSorter::Update(sf::Texture& texture)
 {
+    // static uint64_t iter = 0;
     const sf::Vector2u size = img.getSize();
-    for (int j = 0; j < 1000; j++) {
-        size_t start = index;
-        size_t maxIndex = (size.x * size.y) - 1;
+    uint64_t maxIndex = (size.x * size.y) - 1;
+        // std::cout << "Iter: " << iter++ << std::endl;
+        uint64_t start = index;
         sf::Vector2u pos = Utility::indexToPosition(start, size);
 
         if (start >= maxIndex) {
-            std::cout << "Done" << std::endl;
-            img.saveToFile("output.png");
-            exit(0);
-            return img;
+            return false;
         }
 
         // img.setPixel(pos.x, pos.y, sf::Color::White);
@@ -35,11 +34,10 @@ sf::Image PixelSorter::Update()
 
         std::vector< std::pair<sf::Color, sf::Vector2u> > points;
         for (int i = 0; i < sampleSize; i++) {
-            size_t index = distr(randEng);
+            uint64_t index = distr(randEng);
             sf::Vector2u nextPos = Utility::indexToPosition(index, size);
             std::pair<sf::Color, sf::Vector2u> info(img.getPixel(nextPos.x, nextPos.y), nextPos);
             points.push_back(info);
-            // points.push_back(std::pair<sf::Color, sf::Vector2u>(currColour, nextPos));
         }
 
         std::sort(points.begin(), points.end(), [this, &pos](auto &left, auto &right) {
@@ -75,11 +73,13 @@ sf::Image PixelSorter::Update()
 
         auto bestPos = points[0];
 
+        //  std::cout << (int)bestPos.first.r << " " << (int)bestPos.first.g << " " << (int)bestPos.first.b << std::endl;
+
         img.setPixel(pos.x, pos.y, bestPos.first);
         img.setPixel(bestPos.second.x, bestPos.second.y, currColour);
 
-        index++;
-    }
+    index++;
+    texture.update(img);
 
-    return img;
+    return true;
 }

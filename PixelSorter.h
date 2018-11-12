@@ -7,11 +7,11 @@
 class PixelSorter : Scene
 {
     public:
-        PixelSorter(sf::Image& img, int sampleSize = 500, unsigned int seed = std::time(nullptr));
-        sf::Image Update();
+        PixelSorter(const std::string& path, int sampleSize = 20, unsigned int seed = std::time(nullptr));
+        bool Update(sf::Texture& texture);
     private:
-        sf::Image& img;
-        size_t index;
+        sf::Image img;
+        uint64_t index;
         int sampleSize;
         std::mt19937 randEng;
 };

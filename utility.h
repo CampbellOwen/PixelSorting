@@ -1,20 +1,23 @@
 #include <SFML/Graphics.hpp>
-
+#include <iostream>
+#include <vector>
 class Utility
 {
     public:
-        static size_t positionToIndex(const sf::Vector2u& pos, const sf::Vector2u& size)
+
+        static uint64_t positionToIndex(const sf::Vector2u& pos, const sf::Vector2u& size)
         {
-            return (pos.y * size.x) + pos.x;
+            uint64_t index = (pos.y * size.x) + pos.x;
+            return index;
         }
 
-        static sf::Vector2u indexToPosition(const size_t& index, const sf::Vector2u& size)
+        static sf::Vector2u indexToPosition(const uint64_t& index, const sf::Vector2u& size)
         {
-            sf::Vector2u pos;
-            pos.x = index % size.y;
-            pos.y = index / size.y;
+            // std::cout << size.x << " " << size.y << std::endl;
+            unsigned int x = (unsigned int) (index % (uint64_t)size.x);
+            unsigned int y = (index / size.x);
 
-            return pos;
+            return {x, y};
         }
         static void resizeSprite(const sf::RenderWindow& window, const sf::Texture& texture, sf::Sprite& sprite)
         {

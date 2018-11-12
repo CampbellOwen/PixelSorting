@@ -1,29 +1,39 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include "PixelSorter.h"
+#include "wipe.h"
 #include "scene.h"
 #include "utility.h"
 #include <string>
+#include <iostream>
 
 int main(int /* argc */, char** /* argv */)
 {
-	sf::RenderWindow window(sf::VideoMode(1200, 1200), "Test", sf::Style::Default);
-	sf::VertexArray points;
-	sf::Texture renderTexture;
-	sf::Sprite renderSprite;
+	sf::RenderWindow window(sf::VideoMode(1920, 1080), "Test", sf::Style::Default);
 
 	// window.setFramerateLimit(60);
 
-	sf::Image img;
-	img.loadFromFile("img/rusty.jpg");
-	renderTexture.loadFromImage(img);
-	renderSprite.setTexture(renderTexture);
+	std::string imgPath = "img/painting.jpg";
 
-	// Utility::resizeSprite(window, renderTexture, renderSprite);
+	Wipe scene(imgPath);
+	sf::Texture texture;
+	sf::Sprite sprite;
+	texture.loadFromFile(imgPath);
+	sprite.setTexture(texture);
+	Utility::resizeSprite(window, texture, sprite);
 
-	PixelSorter sorter(img);
+	auto scale = sprite.getScale();
+	auto local = sprite.getLocalBounds();
+	auto global = sprite.getGlobalBounds();
+
+	std::cout << "Scale {" << scale.x << ", " << scale.y << "}" << std::endl;
+	std::cout << "Local Bounds {" << local.width << ", " << local.height << "}" << std::endl;
+	std::cout << "Global Bounds {" << global.width << ", " << global.height << "}" << std::endl;
 	
 	sf::View view = window.getDefaultView();
+	view.setSize({static_cast<float>(texture.getSize().x), static_cast<float>(texture.getSize().y)});
+
+	bool done = false;
 
 	while (window.isOpen()) {
 		sf::Event event;
@@ -37,13 +47,15 @@ int main(int /* argc */, char** /* argv */)
 				// Utility::resizeSprite(window, renderTexture, renderSprite);
 			}
 		}
-
-		sorter.Update();
-		renderTexture.update(img);
-		// renderSprite.setTexture(renderTexture);
-
+				
 		window.clear();
-		window.draw(renderSprite);
+		if (!scene.Update(texture) && !done) {
+			done = true;
+			sf::Image img = texture.copyToImage();
+			img.saveToFile("output/curr_out.png");
+		}
+		// std::cout << "Size {" << texture.getSize().x << ", " << texture.getSize().y << "}" << std::endl;
+		window.draw(sprite);
 		window.display();
 	}
 

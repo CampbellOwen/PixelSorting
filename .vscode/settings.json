@@ -38,6 +38,7 @@
         "tuple": "cpp",
         "numeric": "cpp",
         "algorithm": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "iostream": "cpp"
     }
 }

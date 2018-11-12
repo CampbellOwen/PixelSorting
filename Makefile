@@ -10,11 +10,14 @@ build: app
 clean:
 	rm *.o
 
-app: test.o PixelSorter.o
-	$(CC) $(FLAGS) -o $(OUTPUT) test.o PixelSorter.o $(LFLAGS)
+app: test.o PixelSorter.o wipe.o
+	$(CC) $(FLAGS) -o $(OUTPUT) test.o PixelSorter.o wipe.o $(LFLAGS)
 
 test.o: test.cpp
 	$(CC) $(FLAGS) -c test.cpp
+
+wipe.o: wipe.cpp
+	$(CC) $(FLAGS) -c wipe.cpp
 
 PixelSorter.o: PixelSorter.cpp
 	$(CC) $(FLAGS) -c PixelSorter.cpp
